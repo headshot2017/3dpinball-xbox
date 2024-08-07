@@ -83,8 +83,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 				pb::FullTiltMode = true;
 				break;
 			}
-
-			xbox_graphics::SwapBuffers();
 		}
 
 		xbox_input::Clear();
