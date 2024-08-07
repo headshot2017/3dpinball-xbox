@@ -3,14 +3,11 @@
 #include "Sound.h"
 #include "winmain.h"
 
+#include <SDL.h>
+
 /*
 #define DR_WAV_IMPLEMENTATION
 #include "dr_wav.h"
-
-#include <kos.h>
-#include <dc/sound/aica_comm.h>
-#include <dc/sound/sound.h>
-#include <dc/sound/sfxmgr.h>
 */
 
 int Sound::num_channels;
@@ -19,7 +16,8 @@ int* Sound::TimeStamps = nullptr;
 
 bool Sound::Init(int channels, bool enableFlag)
 {
-	//snd_init();
+	if (SDL_Init(SDL_INIT_AUDIO))
+		return false;
 
 	SetChannels(channels);
 	Enable(enableFlag);
@@ -43,8 +41,7 @@ void Sound::Deactivate()
 
 void Sound::Close()
 {
-	//snd_sfx_unload_all();
-	//snd_shutdown();
+	SDL_QuitSubsystem(SDL_INIT_AUDIO);
 
 	delete[] TimeStamps;
 	TimeStamps = nullptr;
