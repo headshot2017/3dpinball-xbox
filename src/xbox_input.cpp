@@ -116,7 +116,7 @@ void xbox_input::Clear()
 
 bool xbox_input::Exit()
 {
-	return false;
+	return (xboxButtonsHeld & CONT_BACK) && (xboxButtonsHeld && CONT_START);
 }
 
 bool xbox_input::Pause()
