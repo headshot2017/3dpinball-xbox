@@ -111,7 +111,9 @@ void xbox_input::ScanPads()
 
 void xbox_input::Clear()
 {
-	
+	xboxButtonsDown = 0;
+	xboxButtonsUp = 0;
+	xboxButtonsHeld = 0;
 }
 
 bool xbox_input::Exit()
