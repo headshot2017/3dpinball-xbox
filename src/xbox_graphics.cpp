@@ -13,7 +13,7 @@
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
-static SDL_Texture *texture;
+static SDL_Texture *texture, *splash;
 
 void xbox_graphics::Initialize()
 {
@@ -39,12 +39,20 @@ void xbox_graphics::Initialize()
 	SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
     SDL_RenderClear(renderer);
 
-	// splash image is 320x222 RGB32
-	uint8_t* splash_raw = new uint8_t[320*222*3];
+	// splash image is 320x222 RGBA
+	uint8_t* splash_raw = new uint8_t[320*222*4];
 
 	FILE* f = fopen("D:\\cd_root\\splash.raw", "rb");
-	fread(splash_raw, 320*222*3, 1, f);
+	fread(splash_raw, 320*222*4, 1, f);
 	fclose(f);
+
+	splash = SDL_CreateTexture(
+		renderer,
+		SDL_PIXELFORMAT_ABGR8888,
+		SDL_TEXTUREACCESS_STATIC,
+		320, 222
+	);
+	SDL_UpdateTexture(splash, 0, splash_raw, 320*4);
 
 	delete[] splash_raw;
 }
@@ -75,6 +83,18 @@ void xbox_graphics::SwapBuffers()
 
 void xbox_graphics::ShowSplash(std::string text)
 {
+	debugClearScreen();
+
+	SDL_Rect pos = {
+		640/2 - 320/2,
+		480/2 - 222/2,
+		320,
+		222
+	};
+	SDL_RenderClear(renderer);
+	SDL_RenderCopy(renderer, splash, NULL, &pos);
+	SDL_RenderPresent(renderer);
+
 	debugPrint("%s\n", text.c_str());
 	/*
 	vid_clear(0,0,0);
@@ -134,8 +154,10 @@ void xbox_graphics::UpdateFull()
 
 void xbox_graphics::Update()
 {
-	/*
-	int startPos = (vid_mode->height/2 - render::vscreen->Height/2) * vid_mode->width + (vid_mode->width/2 - render::vscreen->Width/2);
+	uint32_t* pixels;
+	int pitch;
+	if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch))
+		return;
 
 	for (uint32_t i=0; i<render::get_dirty_regions().size(); i++)
 	{
@@ -144,15 +166,13 @@ void xbox_graphics::Update()
 		{
 			for (int x=dirty.XPosition; x<dirty.XPosition + dirty.Width; x++)
 			{
-				Rgba c = render::vscreen->BmpBufPtr1[y*render::vscreen->Width+x].rgba;
-				vram_s[startPos + y*vid_mode->width+x] =
-					((c.Red >> 3))
-					| ((c.Green & 0xFC) << 3)
-					| ((c.Blue & 0xF8) << 8);
+				int ind = y*render::vscreen->Width+x;
+				pixels[ind] = render::vscreen->BmpBufPtr1[ind].Color;
 			}
 		}
 	}
-	*/
+
+	SDL_UnlockTexture(texture);
 
 	render::get_dirty_regions().clear();
 }
