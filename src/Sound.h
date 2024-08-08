@@ -8,9 +8,9 @@ public:
 	static void Activate();
 	static void Deactivate();
 	static void Close();
-	static void PlaySound(uint8_t* buf, int time, int size, int samplerate);
-	static uint8_t* LoadWaveFile(const std::string& lpName);
-	static void FreeSound(uint8_t* buf);
+	static void PlaySound(int16_t* buf, int time, int size, int samplerate);
+	static int16_t* LoadWaveFile(const std::string& lpName);
+	static void FreeSound(int16_t* buf);
 	static void SetChannels(int channels);
 private:
 	static int num_channels;

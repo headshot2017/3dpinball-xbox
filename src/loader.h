@@ -13,7 +13,7 @@ struct errorMsg
 
 struct soundListStruct
 {
-	uint8_t* WavePtr;
+	int16_t* WavePtr;
 	int GroupIndex;
 	int Loaded;
 	int DurationSamples;
